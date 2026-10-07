@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Vuejs Petstore</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <div id="app">
+      <header>
+        <h1 v-text="sitename"></h1>
+        <button v-on:click="showCheckout">
+          {{cartItemCount}}
+          <span class="fas fa-cart-plus"></span>
+          Checkout
+        </button>
+      </header>
+
+      <main v-if="showProduct">
+        <figure>
+          <img :src="product.image" alt="Product Image" width="200" />
+        </figure>
+        <h2 v-text="product.title"></h2>
+        <p v-html="product.description"></p>
+        <p><strong>Price:</strong> ${{ (product.price / 100).toFixed(2) }}</p>
+        <p>
+          <strong>Available Stock:</strong> {{ product.availableInventory -
+          cartItemCount }}
+        </p>
+
+        <button v-if="canAddToCart" v-on:click="addItem">Add to cart</button>
+        <button v-else disabled>Out of stock</button>
+
+        <span v-if="product.availableInventory === cartItemCount">
+          All out!
+        </span>
+        <span v-else-if="product.availableInventory - cartItemCount < 5">
+          Only {{ product.availableInventory - cartItemCount }} left!
+        </span>
+        <span v-else> Buy now! </span>
+      </main>
+
+      <main v-else>
+        <h2>Checkout</h2>
+        <section aria-labelledby="cart-heading">
+          <h3 id="cart-heading">Your Cart</h3>
+          <p v-if="cartItemCount === 0">Your cart is empty.</p>
+          <ul v-else>
+            <li v-for="(item, index) in cart" v-bind:key="index">
+              {{ product.title }} - ${{ (product.price / 100).toFixed(2) }}
+            </li>
+          </ul>
+        </section>
+        <p>
+          <strong> First Name:</strong>
+          <input v-model.trim="order.firstName" />
+        </p>
+        <p>
+          <strong>Last Name:</strong>
+          <input v-model.trim="order.lastName" />
+        </p>
+        <p>
+          <strong> Address:</strong>
+          <input v-model.trim="order.address" />
+        </p>
+        <p>
+          <strong>Area:</strong>
+          <input v-model.trim="order.city" />
+        </p>
+        <p>
+          <strong>Post Code:</strong>
+          <input v-model.number="order.postalCode" />
+        </p>
+        <strong> Emirate: </strong>
+        <select v-model="order.emirate">
+          <option disabled value=""></option>
+            <option v-for="(states, key) in emirates" v-bind:value="key">
+                {{ states }}
+        </select>
+        <p>
+          <input type="checkbox" id="gift" value="true" v-model="order.gift" />
+          <label for="gift">Is this a gift?</label>
+        </p>
+        <p>
+          <input
+            type="radio"
+            id="home"
+            value="home"
+            v-model="order.deliveryMethod"
+          />
+          <label for="home">Home Delivery</label>
+        </p>
+        <p>
+          <input
+            type="radio"
+            id="store"
+            value="store"
+            v-model="order.deliveryMethod"
+          />
+          <label for="store">Store Pickup</label>
+        </p>
+
+        <div id="order_info">
+          <h2>Order Info</h2>
+          <p>First name: {{order.firstName}}</p>
+          <p>Last Name: {{order.lastName}}</p>
+          <p>Address: {{order.address}}</p>
+          <p>Area: {{order.city}}</p>
+          <p>Emirate: {{order.emirate}}</p>
+          <p>Is this a gift? {{order.gift}}</p>
+          <p>Delivery Method: {{order.deliveryMethod}}</p>
+        </div>
+        <div id="order_button">
+          <button v-on:click="submitForm">Place Order</button>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      let webstore = new Vue({
+        el: "#app",
+        data: {
+          sitename: "Vuejs Petstore",
+          product: {
+            id: 1001,
+            title: "Cat Food, 20lb bag",
+            description:
+              "Tasty <em>crunchy cat food</em>, not for human consumption",
+            price: 10000,
+            image: "images/kitty.png",
+            availableInventory: 5,
+          },
+          cart: [],
+          showProduct: true,
+          emirates: {
+            AD: "Abu Dhabi",
+            DXB: "Dubai",
+            SHJ: "Sharjah",
+            RAK: "Ras Al Khaimah",
+            UAQ: "Umm Al Quwain",
+          },
+          order: {
+            firstName: "",
+            lastName: "",
+            address: "",
+            city: "",
+            emirate: "",
+            gift: false,
+            deliveryMethod: "",
+          },
+        },
+        computed: {
+          cartItemCount() {
+            return this.cart.length;
+          },
+          canAddToCart: function () {
+            return this.product.availableInventory > this.cartItemCount;
+          },
+        },
+        methods: {
+          addItem() {
+            this.cart.push(this.product.id);
+          },
+          showCheckout() {
+            this.showProduct = this.showProduct ? false : true;
+          },
+          submitForm() {
+            alert("Order placed successfully!");
+          },
+        },
+      });
+    </script>
+  </body>
+</html>
